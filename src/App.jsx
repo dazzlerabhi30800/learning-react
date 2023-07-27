@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DOMPurify from "dompurify";
 import "./App.css";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useLazyQuery } from "@apollo/client";
 
 function App() {
   const AnimeList = gql`
@@ -12,6 +12,7 @@ function App() {
           title {
             english
             native
+            userPreferred
           }
           description
           coverImage {
@@ -25,15 +26,54 @@ function App() {
     }
   `;
 
+  const SearchAnimeList = gql`
+    query SearchQuery($search: String) {
+      Page {
+        media(search: $search) {
+          siteUrl
+          title {
+            english
+            native
+            userPreferred
+          }
+          description
+          coverImage {
+            medium
+          }
+          bannerImage
+          volumes
+          episodes
+        }
+      }
+    }
+  `;
   const [page, setPage] = useState(1);
+  const [title, setTitle] = useState("");
   const { loading, error, data } = useQuery(AnimeList, {
     variables: { page: page },
   });
-  console.log(page);
+  const [handleSearch, list] = useLazyQuery(SearchAnimeList);
+
+  const handleKeyDown = async (e) => {
+    if (e.keyCode === 13) {
+      await handleSearch({ variables: { search: title } });
+      console.log(list.data?.Page?.media);
+    } else {
+      return;
+    }
+  };
 
   return (
     <>
       <h1>Anime List</h1>
+      <input
+        onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={handleKeyDown}
+        type="text"
+        id="search-input"
+        value={title}
+        placeholder="Search Your Favourite Anime"
+      />
       <div className="anime--wrapper">
         {!loading ? (
           data.Page.media.map((item, index) => (
@@ -41,7 +81,7 @@ function App() {
               <img src={item.coverImage.medium} alt={item} />
               <div className="text-info">
                 <h2>
-                  {item.title.english ? item.title.english : item.title.native}
+                  {item.title.english ? item.title.english : item.userPreferred}
                 </h2>
                 <p
                   dangerouslySetInnerHTML={{
