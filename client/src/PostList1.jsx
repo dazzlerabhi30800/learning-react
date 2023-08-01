@@ -6,6 +6,7 @@ function PostList1() {
     queryKey: ["posts"],
     // queryFn: () => Promise.reject("An Error Occured!"),
     queryFn: getPosts,
+    // refetchInterval: 1000,
   });
 
   console.log(postQuery.status);
