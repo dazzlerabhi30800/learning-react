@@ -7,6 +7,8 @@ function PostList1() {
     // queryFn: () => Promise.reject("An Error Occured!"),
     queryFn: getPosts,
     // refetchInterval: 1000,
+    // initialData: [{ id: 1, title: "Initial Data" }],
+    placeholderData: [{ id: 1, title: "Initial Data" }],
   });
 
   console.log(postQuery.status);

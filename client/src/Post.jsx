@@ -21,7 +21,7 @@ export default function Post({ id }) {
   return (
     <>
       <h1>{postQuery.data.title}</h1>
-      <small>{postQuery.data.userId}</small>
+      <small>{postQuery.data.id}</small>
       <p>{postQuery.data.body}</p>
       <small>
         {userQuery.isLoading

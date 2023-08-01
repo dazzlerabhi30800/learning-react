@@ -6,6 +6,21 @@ export async function getPosts() {
     .then((res) => res.data);
 }
 
+export function getPostsPaginated(page) {
+  return axios
+    .get("http://localhost:3000/posts", {
+      params: { _page: page, _sort: "title", _limit: 2 },
+    })
+    .then((res) => {
+      const hasNext = page * 2 <= parseInt(res.headers["x-total-count"]);
+      return {
+        nextPage: hasNext ? page + 1 : undefined,
+        previousPage: page > 1 ? page - 1 : undefined,
+        posts: res.data,
+      };
+    });
+}
+
 export async function getPost(id) {
   return axios.get(`http://localhost:3000/posts/${id}`).then((res) => res.data);
 }
